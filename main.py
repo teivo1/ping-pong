@@ -40,23 +40,15 @@ class Ball(GameSprite):
         self.rect.y += self.speed_y
         self.rect.x -= self.speed_x
 
-        if self.rect.y > 440:
-            self.speed_y *= -1
-        if self.rect.y < 0:
-            self.speed_y *= -1
-        if self.rect.x < 0:
-            self.speed_x *= -1
-        if self.rect.x > 640:
-            self.speed_x *= -1
 
-
-img_player = "racket.png"
+img_player = "racket_test.png"
 img_ball = "ball.png"
 
-player1 = Player(img_player, 0, 100, 0, 5, 85, 120)
-player2 = Player(img_player, 615, 100, 0, 5, 85, 120)
-ball = Ball(img_ball, 300, 300, 2, 2, 60, 60)
+player1 = Player(img_player, -15, 100, 0, 5, 70, 120)
+player2 = Player(img_player, 645, 100, 0, 5, 70, 120)
+ball = Ball(img_ball, 300, 300, 4, 4, 60, 60)
 
+hits = 0
 game = True
 finish = False
 
@@ -64,9 +56,10 @@ clock = time.Clock()
 FPS = 60
 
 font.init()
-font1 = font.Font(None, 35)
-lost1 = font1.render("Player 1 lost!", True, (180, 0, 0))
-lost2 = font1.render("Player 2 lost!", True, (180, 0, 0))
+font1 = font.Font(None, 70)
+font2 = font.Font(None, 40)
+won1 = font1.render("Player 1 won!", True, (102, 255, 0))
+won2 = font1.render("Player 2 won!", True, (102, 255, 0))
 
 while game:
     for e in event.get():
@@ -75,12 +68,32 @@ while game:
 
     if finish != True:
         window.blit(background, (0, 0))
+        text_hits = font2.render("Hits: " + str(hits), 1, (255, 255, 255))
+        window.blit(text_hits, (300, 20))
         player1.update_r()
         player1.reset()
         player2.update_l()
         player2.reset()
         ball.update()
         ball.reset()
+    if sprite.collide_rect(player1, ball) or sprite.collide_rect(player2, ball):
+        ball.speed_x *= -1
+        hits += 1
+        text_hits = font2.render("Hits: " + str(hits), 1, (255, 255, 255))
+        window.blit(text_hits, (300, 20))
+
+    if ball.rect.y > 440:
+        ball.speed_y *= -1
+    if ball.rect.y < 0:
+        ball.speed_y *= -1
+
+    if ball.rect.x < 35:
+        window.blit(won2, (190, 215))
+        finish = True
+    if ball.rect.x > 630:
+        window.blit(won1, (190, 215))
+        finish = True
+
 
     display.update()
     clock.tick(FPS)
